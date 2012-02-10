@@ -1,0 +1,11 @@
+;;; connman.setup -*- scheme -*-
+
+(compile -s -O3 -d1 connman.scm)
+
+;;; FIXME
+;; (compile -s -O3 -d1 connman connman.scm)
+;; (compile -s -O3 -d1 connman.import.scm)
+
+(install-extension 'connman
+                   '("connman.so") ;; FIXME: add connman.import.so
+                   '((version 0.1)))
