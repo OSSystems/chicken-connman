@@ -149,7 +149,7 @@
                           (_ (and (not (empty-dbus-value? proxy-conf))
                                   (not (value-not-set? proxy-conf))))
                           (proxy-conf (vector->list proxy-conf)))
-                 (make-proxy-profiguration
+                 (make-proxy-configuration
                   service-context
                   (dbus-value "Method" proxy-conf)
                   (dbus-value "Address" proxy-conf)
