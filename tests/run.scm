@@ -29,11 +29,13 @@
   (let ((ipv4 (service-properties-ipv4-configuration dp)))
     (print "    Method: " (ipv4-configuration-method ipv4)))
 
-  ;; Not working yet
-  ;; (print "Setting IPv6 configuration")
-  ;; (let ((ipv6 (service-properties-ipv6-configuration dp)))
-  ;;   (print "IPv6 configuration: " ipv6)
-  ;;   (print "IPv6 configuration (method): " (ipv6-configuration-method ipv6))
-  ;;   (ipv6-configuration-method-set! ipv6 "foo"))
-
-  )
+  (print "\nSetting IPv6 configuration")
+  (let ((ipv6 (service-properties-ipv6-configuration dp)))
+    (print "IPv6 configuration (address): " (ipv6-configuration-address ipv6))
+    (print "IPv6 configuration (privacy): " (ipv6-configuration-privacy ipv6))
+    (print "IPv6 configuration (method): " (ipv6-configuration-method ipv6))
+    (ipv6-configuration-method-set! ipv6 "auto")
+    (print "IPv6 configuration (address): " (ipv6-configuration-address ipv6))
+    (print "IPv6 configuration (privacy): " (ipv6-configuration-privacy ipv6))
+    (print "IPv6 configuration (method): " (ipv6-configuration-method ipv6))
+    ))

@@ -227,12 +227,55 @@
             proxy-excludes-set!
             ))
 
-;;; Use `advise' to update records _and_ call dbus methods (require
-;;; dbus support for marshalling variants)
-;;
-;; (advise 'before ipv6-configuration-method-set!
-;;         (lambda (args)
-;;           (let* ((ipv6 (car args))
-;;                 (context (ipv6-configuration-context ipv6))
-;;                 (new-val (cadr args)))
-;;             (dbus-call context "SetProperty" "IPv6.Configuration" new-val))))
+
+;;;
+;;; Use `advise' to update records _and_ call dbus methods
+;;;
+
+(define-syntax configuration-setter
+  (syntax-rules ()
+    ((_ section proc method context-getter)
+     (advise 'before proc
+             (lambda (args)
+               (let* ((ipv6 (car args))
+                      (context (context-getter ipv6))
+                      (new-val (cadr args))
+                      (dbus-val (make-variant `#((,method . ,new-val)))))
+                 (dbus-call context "SetProperty" section dbus-val)))))))
+
+(define-syntax set-methods!
+  (syntax-rules ()
+    ((_ section context-getter procs/methods)
+     (for-each
+      (lambda (proc/method)
+        (let ((proc (car proc/method))
+              (method (cdr proc/method)))
+          (configuration-setter section proc method context-getter)))
+      procs/methods))))
+
+
+;;; IPv6
+(set-methods! "IPv6.Configuration"
+              ipv6-configuration-context
+              `((,ipv6-configuration-address-set! . "Address")
+                (,ipv6-configuration-privacy-set! . "Privacy")
+                (,ipv6-configuration-method-set!  . "Method")
+                (,ipv6-configuration-gateway-set! . "Gateway")
+                (,ipv6-configuration-prefix-length-set!  . "PrefixLength")))
+
+;;; IPv4
+(set-methods! "IPv4.Configuration"
+              ipv4-configuration-context
+              `((,ipv4-configuration-address-set! . "Address")
+                (,ipv4-configuration-netmask-set! . "Netmask")
+                (,ipv4-configuration-method-set!  . "Method")
+                (,ipv4-configuration-gateway-set! . "Gateway")))
+
+
+;;; Proxy
+(set-methods! "Proxy.Configuration"
+              proxy-configuration-context
+              `((,proxy-configuration-method-set!   . "Method")
+                (,proxy-configuration-url-set!      . "URL")
+                (,proxy-configuration-servers-set!  . "Servers")
+                (,proxy-configuration-excludes-set! . "Excludes")))
