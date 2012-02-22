@@ -56,7 +56,6 @@
 (define (service-properties service-context)
   (let (;; FIXME: handle errors (depends on dbus egg raising errors)
         (properties (dbus-call service-context "GetProperties")))
-    (pp properties)
     (if (or (not properties) (null? properties))
         #f
         (let* ((props (vector->list (car properties))))
