@@ -184,49 +184,6 @@
   (dbus-call context "ResetCounters"))
 
 
-;; Error out when attempting to set read-only properties
-(for-each (lambda (proc)
-            (advise 'before
-                    (eval proc)
-                    (lambda _
-                      (error proc "This property is read-only."))))
-          '(service-properties-state-set!
-            service-properties-name-set!
-            service-properties-type-set!
-            service-properties-security-set!
-            service-properties-favorite?-set!
-            service-properties-immutable?-set!
-            service-properties-auto-connect?-set!
-            service-properties-login-required?
-            service-properties-strength-set!
-            service-properties-roaming?-set!
-            service-properties-domains-set!
-            service-properties-ipv4-set!
-            service-properties-ipv6-set!
-            service-properties-proxy-set!
-            service-properties-provider-set!
-            service-properties-ethernet-set!
-            ethernet-method-set!
-            ethernet-interface-set!
-            ethernet-address-set!
-            ethernet-mtu-set!
-            ethernet-speed-set!
-            ethernet-duplex-set!
-            ipv4-method-set!
-            ipv4-address-set!
-            ipv4-netmask-set!
-            ipv4-gateway-set!
-            ipv6-method-set!
-            ipv6-address-set!
-            ipv6-prefix-length-set!
-            ipv6-gateway-set!
-            ipv6-privacy-set!
-            proxy-method-set!
-            proxy-url-set!
-            proxy-servers-set!
-            proxy-excludes-set!
-            ))
-
 
 ;;;
 ;;; Use `advise' to update records _and_ call dbus methods
