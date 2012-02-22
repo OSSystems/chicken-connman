@@ -237,8 +237,8 @@
     ((_ section proc method context-getter)
      (advise 'before proc
              (lambda (args)
-               (let* ((ipv6 (car args))
-                      (context (context-getter ipv6))
+               (let* ((obj (car args))
+                      (context (context-getter obj))
                       (new-val (cadr args))
                       (dbus-val (make-variant `#((,method . ,new-val)))))
                  (dbus-call context "SetProperty" section dbus-val)))))))
