@@ -1,7 +1,7 @@
 ;;;; -*- scheme -*-
 ((synopsis "Manage ConnMan using the D-Bus API ")
  (author "O.S. Systems")
- ;; FIXME: add license
+ (license "BSD")
  (category misc)
  (egg "connman.egg")
  (depends (dbus "0.90") ssax matchable advice)
