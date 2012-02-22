@@ -94,6 +94,7 @@
    proxy-configuration-excludes-set!
 
    ;; Service properties
+   service-properties
    service-properties?
    service-properties-context
    service-properties-type
