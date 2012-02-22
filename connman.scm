@@ -36,6 +36,15 @@
    proxy-servers
    proxy-excludes
 
+   ;; Provider
+   make-provider
+   provider?
+   provider-context
+   provider-host
+   provider-domain
+   provider-name
+   provider-type
+
    ;; IPv4 configuration
    make-ipv4-configuration
    ipv4-configuration?

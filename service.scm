@@ -19,6 +19,7 @@
 (define-record ipv4-configuration context method address netmask gateway)
 (define-record ipv6-configuration context method address prefix-length gateway privacy)
 (define-record proxy-configuration context method url servers excludes)
+(define-record provider context host domain name type)
 
 (define-record service-properties
   context
@@ -117,7 +118,18 @@
                   (dbus-value "Netmask" proxy)
                   (dbus-value "Gateway" proxy)))
                (make-proxy value-not-set value-not-set value-not-set value-not-set))
-           (dbus-value "Provider" props)
+           (or (and-let* ((provider (dbus-value "Provider" props))
+                          (_ (and (not (empty-dbus-value? provider))
+                                  (not (value-not-set? provider))))
+                          (provider (vector->list provider)))
+                 (make-provider
+                  service-context
+                  (dbus-value "Host" provider)
+                  (dbus-value "Domain" provider)
+                  (dbus-value "Name" provider)
+                  (dbus-value "Type" provider)))
+               (make-provider
+                value-not-set value-not-set value-not-set value-not-set value-not-set))
            (dbus-value "Nameservers.Configuration" props)
            (or (and-let* ((ipv4-conf (dbus-value "IPv4.Configuration" props))
                           (_ (and (not (empty-dbus-value? ipv4-conf))
