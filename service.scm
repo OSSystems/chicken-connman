@@ -43,7 +43,8 @@
   nameservers-configuration
   ipv4-configuration
   ipv6-configuration
-  proxy-configuration)
+  proxy-configuration
+  domains-configuration)
 
 
 (define (make-service-context service)
@@ -168,6 +169,7 @@
                   (dbus-value "Gateway" proxy-conf)))
                (make-proxy-configuration
                 value-not-set value-not-set value-not-set value-not-set value-not-set))
+           (dbus-value "Domains.Configuration" props)
            )))))
 
 
@@ -247,3 +249,27 @@
                 (,proxy-configuration-url-set!      . "URL")
                 (,proxy-configuration-servers-set!  . "Servers")
                 (,proxy-configuration-excludes-set! . "Excludes")))
+
+
+;;; Domains configuration
+(advise 'before service-properties-domains-configuration-set!
+        (lambda (args)
+          (let* ((obj (car args))
+                 (context (service-properties-context obj))
+                 (new-val (cadr args))
+                 (dbus-val (make-variant new-val)))
+            (dbus-call context
+                       "SetProperty"
+                       "Domains.Configuration" dbus-val))))
+
+
+;;; Nameservers configuration
+(advise 'before service-properties-nameservers-configuration-set!
+        (lambda (args)
+          (let* ((obj (car args))
+                 (context (service-properties-context obj))
+                 (new-val (cadr args))
+                 (dbus-val (make-variant new-val)))
+            (dbus-call context
+                       "SetProperty"
+                       "Nameservers.Configuration" dbus-val))))

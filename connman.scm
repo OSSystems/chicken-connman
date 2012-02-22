@@ -114,9 +114,12 @@
    service-properties-proxy
    service-properties-provider
    service-properties-nameservers-configuration
+   service-properties-nameservers-configuration-set!
    service-properties-ipv4-configuration
    service-properties-ipv6-configuration
    service-properties-proxy-configuration
+   service-properties-domains-configuration
+   service-properties-domains-configuration-set!
 
    make-service-context
    service-connect!
