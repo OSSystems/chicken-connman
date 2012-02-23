@@ -53,12 +53,9 @@
    ipv4-configuration-address
    ipv4-configuration-netmask
    ipv4-configuration-gateway
-   ;; Setters
-   ipv4-configuration-context-set!
-   ipv4-configuration-method-set!
-   ipv4-configuration-address-set!
-   ipv4-configuration-netmask-set!
-   ipv4-configuration-gateway-set!
+   ipv4-configuration-set-dhcp!
+   ipv4-configuration-set-manual!
+   ipv4-configuration-set-off!
 
 
    ;; IPv6 configuration
@@ -70,13 +67,9 @@
    ipv6-configuration-prefix-length
    ipv6-configuration-gateway
    ipv6-configuration-privacy
-   ;; Setters
-   ipv6-configuration-context-set!
-   ipv6-configuration-method-set!
-   ipv6-configuration-address-set!
-   ipv6-configuration-prefix-length-set!
-   ipv6-configuration-gateway-set!
-   ipv6-configuration-privacy-set!
+   ipv6-configuration-set-auto!
+   ipv6-configuration-set-off!
+   ipv6-configuration-set-manual!
 
    ;; Proxy configuration
    make-proxy-configuration
@@ -86,12 +79,9 @@
    proxy-configuration-url
    proxy-configuration-servers
    proxy-configuration-excludes
-   ;; Setters
-   proxy-configuration-context-set!
-   proxy-configuration-method-set!
-   proxy-configuration-url-set!
-   proxy-configuration-servers-set!
-   proxy-configuration-excludes-set!
+   proxy-configuration-set-direct!
+   proxy-configuration-set-auto!
+   proxy-configuration-set-manual!
 
    ;; Service properties
    service-properties
@@ -131,7 +121,7 @@
    service-reset-counters!
    )
 
-(import chicken scheme ports files data-structures extras)
+(import chicken scheme ports files data-structures extras srfi-1)
 (use ssax matchable posix advice)
 (use (rename dbus ;; Important: dbus 0.90 is required
              (call dbus-call)

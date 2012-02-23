@@ -197,58 +197,152 @@
   (dbus-call context "ResetCounters"))
 
 
+;;;
+;;; Setters
+;;;
+
+;;;
+;;; IPv4
+;;;
+(define (ipv4-configuration-set-dhcp! ipv4-config)
+  (ipv4-configuration-method-set! ipv4-config "dhcp")
+  (dbus-call
+   (ipv4-configuration-context ipv4-config)
+   "SetProperty"
+   "IPv4.Configuration"
+   (make-variant `#(("Method" . "dhcp")))))
+
+
+(define (ipv4-configuration-set-off! ipv4-config)
+  (ipv4-configuration-method-set! ipv4-config "off")
+  (dbus-call
+   (ipv4-configuration-context ipv4-config)
+   "SetProperty"
+   "IPv4.Configuration"
+   (make-variant `#(("Method" . "off")))))
+
+
+(define (ipv4-configuration-set-manual! ipv4-config address #!key netmask gateway)
+  (ipv4-configuration-method-set! ipv4-config "manual")
+  (ipv4-configuration-address-set! ipv4-config address)
+  (when netmask (ipv4-configuration-netmask-set! ipv4-config netmask))
+  (when gateway (ipv4-configuration-gateway-set! ipv4-config gateway))
+  (dbus-call
+   (ipv4-configuration-context ipv4-config)
+   "SetProperty"
+   "IPv4.Configuration"
+   (make-variant
+    (list->vector
+     (append
+      `(("Method" . "manual")
+        ("Address" . ,address))
+      (if netmask
+          `(("Netmask" . ,netmask))
+          '())
+      (if gateway
+          `(("Gateway" . ,gateway))
+          '()))))))
+
+;;;
+;;; IPv6
+;;;
+(define (ipv6-configuration-set-auto! ipv6-config)
+  (ipv6-configuration-method-set! ipv6-config "auto")
+  (dbus-call
+   (ipv6-configuration-context ipv6-config)
+   "SetProperty"
+   "Ipv6.Configuration"
+   (make-variant `#(("Method" . "auto")))))
+
+
+(define (ipv6-configuration-set-off! ipv6-config)
+  (ipv6-configuration-method-set! ipv6-config "off")
+  (dbus-call
+   (ipv6-configuration-context ipv6-config)
+   "SetProperty"
+   "Ipv6.Configuration"
+   (make-variant `#(("Method" . "off")))))
+
+
+(define (ipv6-configuration-set-manual! ipv6-config #!key address prefix-length gateway privacy)
+  (ipv6-configuration-method-set! ipv6-config "manual")
+  (when address (ipv6-configuration-address-set! ipv6-config address))
+  (when prefix-length (ipv6-configuration-prefix-length-set! ipv6-config prefix-length))
+  (when gateway (ipv6-configuration-gateway-set! ipv6-config gateway))
+  (when privacy (ipv6-configuration-privacy-set! ipv6-config privacy))
+  (let ((conf-group (list address prefix-length gateway)))
+    ;; Either all or none set
+    (when (and (any identity conf-group)
+               (not (every identity conf-group)))
+      (error 'ipv6-configuration-set-manual!
+             "Either all or none of `address', `prefix-length' and `gateway' should be set.")))
+  (dbus-call
+   (ipv6-configuration-context ipv6-config)
+   "SetProperty"
+   "Ipv6.Configuration"
+   (make-variant
+    (list->vector
+     (append
+      `(("Method" . "manual"))
+      (if (and address prefix-length gateway)
+          `(("Address" . ,address)
+            ("PrefixLength" . ,prefix-length)
+            ("Gateway" . ,gateway))
+          '())
+      (if privacy
+          `(("Privacy" . ,privacy))
+          '()))))))
+
+
+;;;
+;;; Proxy
+;;;
+(define (proxy-configuration-set-direct! proxy-config)
+  (proxy-configuration-method-set! proxy-config "direct")
+  (dbus-call
+   (proxy-configuration-context proxy-config)
+   "SetProperty"
+   "Proxy.Configuration"
+   (make-variant `#(("Method" . "direct")))))
+
+
+(define (proxy-configuration-set-manual! proxy-config #!key servers excludes)
+  (let ((servers (and servers (list->vector servers)))
+        (excludes (and excludes (list->vector excludes))))
+    (proxy-configuration-method-set! proxy-config "direct")
+    (when servers (proxy-configuration-servers-set! proxy-config servers))
+    (when excludes (proxy-configuration-excludes-set! proxy-config excludes))
+    (dbus-call
+     (proxy-configuration-context proxy-config)
+     "SetProperty"
+     "Proxy.Configuration"
+     (make-variant
+      (list->vector
+       (append
+        `(("Method" . "direct"))
+        (if servers
+            `(("Servers" . ,servers))
+            '())
+        (if excludes
+            `(("Excludes" . ,excludes))
+            '())))))))
+
+
+(define (proxy-configuration-set-auto! proxy-config url)
+  (proxy-configuration-method-set! proxy-config "auto")
+  (proxy-configuration-url-set! proxy-config url)
+  (dbus-call
+   (proxy-configuration-context proxy-config)
+   "SetProperty"
+   "Proxy.Configuration"
+   (make-variant `#(("Method" . "auto")
+                    ("URL" . ,url)))))
+
+
 
 ;;;
 ;;; Use `advise' to update records _and_ call dbus methods
 ;;;
-
-(define-syntax configuration-setter
-  (syntax-rules ()
-    ((_ section proc method context-getter)
-     (advise 'before proc
-             (lambda (args)
-               (let* ((obj (car args))
-                      (context (context-getter obj))
-                      (new-val (cadr args))
-                      (dbus-val (make-variant `#((,method . ,new-val)))))
-                 (dbus-call context "SetProperty" section dbus-val)))))))
-
-(define-syntax set-methods!
-  (syntax-rules ()
-    ((_ section context-getter procs/methods)
-     (for-each
-      (lambda (proc/method)
-        (let ((proc (car proc/method))
-              (method (cdr proc/method)))
-          (configuration-setter section proc method context-getter)))
-      procs/methods))))
-
-
-;;; IPv6
-(set-methods! "IPv6.Configuration"
-              ipv6-configuration-context
-              `((,ipv6-configuration-address-set! . "Address")
-                (,ipv6-configuration-privacy-set! . "Privacy")
-                (,ipv6-configuration-method-set!  . "Method")
-                (,ipv6-configuration-gateway-set! . "Gateway")
-                (,ipv6-configuration-prefix-length-set!  . "PrefixLength")))
-
-;;; IPv4
-(set-methods! "IPv4.Configuration"
-              ipv4-configuration-context
-              `((,ipv4-configuration-address-set! . "Address")
-                (,ipv4-configuration-netmask-set! . "Netmask")
-                (,ipv4-configuration-method-set!  . "Method")
-                (,ipv4-configuration-gateway-set! . "Gateway")))
-
-
-;;; Proxy
-(set-methods! "Proxy.Configuration"
-              proxy-configuration-context
-              `((,proxy-configuration-method-set!   . "Method")
-                (,proxy-configuration-url-set!      . "URL")
-                (,proxy-configuration-servers-set!  . "Servers")
-                (,proxy-configuration-excludes-set! . "Excludes")))
 
 
 ;;; Domains configuration
