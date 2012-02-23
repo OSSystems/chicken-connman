@@ -5,10 +5,10 @@
                                interface: 'org.freedesktop.DBus.Introspectable
                                path: '/net/connman/service))
          (result (xml->sxml (dbus-call c "Introspect")))
-         (nodes (cdr result)))
+         (nodes (cdar (cdr result))))
     (map (lambda (node)
            (match node
-             ((node (node (@ (_name name)))) name)))
+             ((node (@ (_name name))) name)))
          nodes)))
 
 
