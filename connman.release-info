@@ -3,3 +3,4 @@
 (uri targz "https://github.com/OSSystems/chicken-{egg-name}/tarball/{egg-release}")
 (release "0.2")
 (release "0.3")
+(release "0.4")
