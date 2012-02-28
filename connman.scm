@@ -1,5 +1,9 @@
 (module connman
-  (connman-discover-services
+  (
+   ;;;
+   ;;; Services
+   ;;;
+   connman-discover-services
 
    ;; Ethernet
    make-ethernet
@@ -119,7 +123,16 @@
    service-move-before!
    service-move-after!
    service-reset-counters!
+
+   ;;;
+   ;;; Manager
+   ;;;
+   make-manager-context
+   manager-state
+   manager-technologies
+   manager-services
    )
+
 
 (import chicken scheme ports files data-structures extras srfi-1)
 (use ssax matchable posix advice)
