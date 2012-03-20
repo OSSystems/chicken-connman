@@ -1,15 +1,19 @@
 (define (connman-discover-services)
-  ;; FIXME: handle errors (depends on dbus egg raising errors)
-  (let* ((c (dbus-make-context bus: system-bus
-                               service: 'net.connman
-                               interface: 'org.freedesktop.DBus.Introspectable
-                               path: '/net/connman/service))
-         (result (xml->sxml (dbus-call c "Introspect")))
-         (nodes (cdar (cdr result))))
-    (map (lambda (node)
-           (match node
-             ((node (@ (_name name))) name)))
-         nodes)))
+  (or (and-let* ((c (dbus-make-context
+                     bus: system-bus
+                     service: 'net.connman
+                     interface: 'org.freedesktop.DBus.Introspectable
+                     path: '/net/connman/service))
+                 (introspect-results (handle-exceptions exn
+                                       #f
+                                       (dbus-call c "Introspect")))
+                 (result (xml->sxml introspect-results))
+                 (nodes (cdar (cdr result))))
+        (map (lambda (node)
+               (match node
+                 ((node (@ (_name name))) name)))
+             nodes))
+      '()))
 
 
 (define-record ethernet method interface address mtu speed duplex)
@@ -56,8 +60,9 @@
 
 
 (define (service-properties service-context)
-  (let (;; FIXME: handle errors (depends on dbus egg raising errors)
-        (properties (dbus-call service-context "GetProperties")))
+  (let ((properties (handle-exceptions exn
+                      #f
+                      (dbus-call service-context "GetProperties"))))
     (if (or (not properties) (null? properties))
         #f
         (let* ((props (vector->list (car properties))))
