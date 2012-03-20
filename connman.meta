@@ -5,5 +5,5 @@
  (license "BSD")
  (category misc)
  (egg "connman.egg")
- (depends (dbus "0.90") ssax matchable advice)
+ (depends (dbus "0.91") ssax matchable advice)
  )
