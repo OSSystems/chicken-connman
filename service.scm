@@ -215,7 +215,7 @@
    (ipv4-configuration-context ipv4-config)
    "SetProperty"
    "IPv4.Configuration"
-   (make-variant `#(("Method" . "dhcp")))))
+   (make-variant `#(("Method" . ,(make-variant "dhcp"))))))
 
 
 (define (ipv4-configuration-set-off! ipv4-config)
@@ -224,7 +224,7 @@
    (ipv4-configuration-context ipv4-config)
    "SetProperty"
    "IPv4.Configuration"
-   (make-variant `#(("Method" . "off")))))
+   (make-variant `#(("Method" . ,(make-variant "off"))))))
 
 
 (define (ipv4-configuration-set-manual! ipv4-config address #!key netmask gateway)
@@ -239,13 +239,13 @@
    (make-variant
     (list->vector
      (append
-      `(("Method" . "manual")
-        ("Address" . ,address))
+      `(("Method" . ,(make-variant "manual"))
+        ("Address" . ,(make-variant address)))
       (if netmask
-          `(("Netmask" . ,netmask))
+          `(("Netmask" . ,(make-variant netmask)))
           '())
       (if gateway
-          `(("Gateway" . ,gateway))
+          `(("Gateway" . ,(make-variant gateway)))
           '()))))))
 
 ;;;
@@ -257,7 +257,7 @@
    (ipv6-configuration-context ipv6-config)
    "SetProperty"
    "Ipv6.Configuration"
-   (make-variant `#(("Method" . "auto")))))
+   (make-variant `#(("Method" . ,(make-variant "auto"))))))
 
 
 (define (ipv6-configuration-set-off! ipv6-config)
@@ -266,7 +266,7 @@
    (ipv6-configuration-context ipv6-config)
    "SetProperty"
    "Ipv6.Configuration"
-   (make-variant `#(("Method" . "off")))))
+   (make-variant `#(("Method" . ,(make-variant "off"))))))
 
 
 (define (ipv6-configuration-set-manual! ipv6-config #!key address prefix-length gateway privacy)
@@ -288,14 +288,14 @@
    (make-variant
     (list->vector
      (append
-      `(("Method" . "manual"))
+      `(("Method" . ,(make-variant "manual")))
       (if (and address prefix-length gateway)
-          `(("Address" . ,address)
-            ("PrefixLength" . ,prefix-length)
-            ("Gateway" . ,gateway))
+          `(("Address" . ,(make-variant address))
+            ("PrefixLength" . ,(make-variant prefix-length))
+            ("Gateway" . ,(make-variant gateway)))
           '())
       (if privacy
-          `(("Privacy" . ,privacy))
+          `(("Privacy" . ,(make-variant privacy)))
           '()))))))
 
 
@@ -308,7 +308,7 @@
    (proxy-configuration-context proxy-config)
    "SetProperty"
    "Proxy.Configuration"
-   (make-variant `#(("Method" . "direct")))))
+   (make-variant `#(("Method" . ,(make-variant "direct"))))))
 
 
 (define (proxy-configuration-set-manual! proxy-config #!key servers excludes)
@@ -324,12 +324,12 @@
      (make-variant
       (list->vector
        (append
-        `(("Method" . "direct"))
+        `(("Method" . ,(make-variant "direct")))
         (if servers
-            `(("Servers" . ,servers))
+            `(("Servers" . ,(make-variant servers)))
             '())
         (if excludes
-            `(("Excludes" . ,excludes))
+            `(("Excludes" . ,(make-variant excludes)))
             '())))))))
 
 
@@ -340,8 +340,8 @@
    (proxy-configuration-context proxy-config)
    "SetProperty"
    "Proxy.Configuration"
-   (make-variant `#(("Method" . "auto")
-                    ("URL" . ,url)))))
+   (make-variant `#(("Method" . ,(make-variant "auto"))
+                    ("URL" . ,(make-variant url))))))
 
 
 
