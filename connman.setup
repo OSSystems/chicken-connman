@@ -5,4 +5,4 @@
 
 (install-extension 'connman
                    '("connman.so" "connman.import.so")
-                   '((version 0.6)))
+                   '((version 0.7)))
