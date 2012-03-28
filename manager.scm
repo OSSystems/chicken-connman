@@ -72,6 +72,14 @@
          techs)))
 
 
+;;;
+;;; Manager services
+;;;
 (define (manager-services context)
-  (and-let* ((services (dbus-call context "GetServices")))
-    (car services)))
+  (and-let* ((services (dbus-call context "GetServices"))
+	     (services (vector->list (car services))))
+    (map (lambda (item)
+           (let* ((path (object-path->string (struct-ref item 0)))
+		  (context (make-service-context path)))
+	     (service-properties context)))
+	 services)))
