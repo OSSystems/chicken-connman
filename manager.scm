@@ -46,9 +46,30 @@
    (make-variant session-mode?)))
 
 
+;;;
+;;; Manager technologies
+;;;
+(define-record manager-technology
+  path
+  name
+  type
+  powered?
+  connected?
+  thetering?)
+
 (define (manager-technologies context)
-  (and-let* ((techs (dbus-call context "GetTechnologies")))
-    (car techs)))
+  (and-let* ((techs (dbus-call context "GetTechnologies"))
+             (techs (vector->list (car techs))))
+    (map (lambda (item)
+           (let ((path (object-path->string (struct-ref item 0)))
+		 (properties (vector->list (struct-ref item 1))))
+             (make-manager-technology path
+                                      (dbus-value "Name" properties)
+                                      (dbus-value "Type" properties)
+                                      (dbus-value "Powered" properties)
+                                      (dbus-value "Connected" properties)
+                                      (dbus-value "Thetering" properties))))
+         techs)))
 
 
 (define (manager-services context)

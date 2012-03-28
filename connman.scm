@@ -136,8 +136,16 @@
    manager-properties-set-offline-mode!
    manager-properties-set-session-mode!
 
-   make-manager-context
+   ;; Technologies
    manager-technologies
+   manager-technology-path
+   manager-technology-name
+   manager-technology-type
+   manager-technology-powered?
+   manager-technology-connected?
+   manager-technology-thetering?
+
+   make-manager-context
    manager-services
    )
 
