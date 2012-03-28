@@ -127,8 +127,16 @@
    ;;;
    ;;; Manager
    ;;;
+   manager-properties
+   manager-properties-state
+   manager-properties-offline-mode?
+   manager-properties-available-debugs
+   manager-properties-enabled-debugs
+   manager-properties-session-mode?
+   manager-properties-set-offline-mode!
+   manager-properties-set-session-mode!
+
    make-manager-context
-   manager-state
    manager-technologies
    manager-services
    )
