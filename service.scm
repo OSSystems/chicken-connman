@@ -26,6 +26,7 @@
 (define-record provider context host domain name type)
 
 (define-record service-properties
+  path
   context
   type
   security
@@ -55,8 +56,10 @@
   (dbus-make-context bus: system-bus
                      service: 'net.connman
                      interface: 'net.connman.Service
-                     path: (make-pathname "/net/connman/service"
-                                          service)))
+                     path: (if (absolute-pathname? (->string service))
+                               service
+                               (make-pathname "/net/connman/service"
+                                              service))))
 
 
 (define (service-properties service-context)
@@ -67,6 +70,7 @@
         #f
         (let* ((props (vector->list (car properties))))
           (make-service-properties
+           (->string (vector-ref service-context 3))
            service-context
            (dbus-value "Type" props)
            (dbus-value "Security" props)

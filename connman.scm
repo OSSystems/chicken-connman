@@ -90,6 +90,7 @@
    ;; Service properties
    service-properties
    service-properties?
+   service-properties-path
    service-properties-context
    service-properties-type
    service-properties-security
