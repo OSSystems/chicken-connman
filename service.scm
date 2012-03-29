@@ -211,6 +211,18 @@
 ;;;
 
 ;;;
+;;; AutoConnect
+;;;
+(define (service-properties-set-auto-connect! properties auto-connect?)
+  (service-properties-auto-connect?-set! properties auto-connect?)
+  (dbus-call
+   (service-properties-context properties)
+   "SetProperty"
+   "AutoConnect"
+   (make-variant auto-connect?)))
+
+
+;;;
 ;;; IPv4
 ;;;
 (define (ipv4-configuration-set-dhcp! ipv4-config)

@@ -116,6 +116,7 @@
    service-properties-proxy-configuration
    service-properties-domains-configuration
    service-properties-domains-configuration-set!
+   service-properties-set-auto-connect!
 
    make-service-context
    service-connect!
