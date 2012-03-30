@@ -214,40 +214,36 @@
 ;;; AutoConnect
 ;;;
 (define (service-properties-set-auto-connect! properties auto-connect?)
-  (service-properties-auto-connect?-set! properties auto-connect?)
   (dbus-call
    (service-properties-context properties)
    "SetProperty"
    "AutoConnect"
-   (make-variant auto-connect?)))
+   (make-variant auto-connect?))
+  (service-properties-auto-connect?-set! properties auto-connect?))
 
 
 ;;;
 ;;; IPv4
 ;;;
 (define (ipv4-configuration-set-dhcp! ipv4-config)
-  (ipv4-configuration-method-set! ipv4-config "dhcp")
   (dbus-call
    (ipv4-configuration-context ipv4-config)
    "SetProperty"
    "IPv4.Configuration"
-   (make-variant `#(("Method" . ,(make-variant "dhcp"))))))
+   (make-variant `#(("Method" . ,(make-variant "dhcp")))))
+  (ipv4-configuration-method-set! ipv4-config "dhcp"))
 
 
 (define (ipv4-configuration-set-off! ipv4-config)
-  (ipv4-configuration-method-set! ipv4-config "off")
   (dbus-call
    (ipv4-configuration-context ipv4-config)
    "SetProperty"
    "IPv4.Configuration"
-   (make-variant `#(("Method" . ,(make-variant "off"))))))
+   (make-variant `#(("Method" . ,(make-variant "off")))))
+  (ipv4-configuration-method-set! ipv4-config "off"))
 
 
 (define (ipv4-configuration-set-manual! ipv4-config address #!key netmask gateway)
-  (ipv4-configuration-method-set! ipv4-config "manual")
-  (ipv4-configuration-address-set! ipv4-config address)
-  (when netmask (ipv4-configuration-netmask-set! ipv4-config netmask))
-  (when gateway (ipv4-configuration-gateway-set! ipv4-config gateway))
   (dbus-call
    (ipv4-configuration-context ipv4-config)
    "SetProperty"
@@ -262,35 +258,35 @@
           '())
       (if gateway
           `(("Gateway" . ,(make-variant gateway)))
-          '()))))))
+          '())))))
+  (ipv4-configuration-method-set! ipv4-config "manual")
+  (ipv4-configuration-address-set! ipv4-config address)
+  (when netmask (ipv4-configuration-netmask-set! ipv4-config netmask))
+  (when gateway (ipv4-configuration-gateway-set! ipv4-config gateway)))
+
 
 ;;;
 ;;; IPv6
 ;;;
 (define (ipv6-configuration-set-auto! ipv6-config)
-  (ipv6-configuration-method-set! ipv6-config "auto")
   (dbus-call
    (ipv6-configuration-context ipv6-config)
    "SetProperty"
    "Ipv6.Configuration"
-   (make-variant `#(("Method" . ,(make-variant "auto"))))))
+   (make-variant `#(("Method" . ,(make-variant "auto")))))
+  (ipv6-configuration-method-set! ipv6-config "auto"))
 
 
 (define (ipv6-configuration-set-off! ipv6-config)
-  (ipv6-configuration-method-set! ipv6-config "off")
   (dbus-call
    (ipv6-configuration-context ipv6-config)
    "SetProperty"
    "Ipv6.Configuration"
-   (make-variant `#(("Method" . ,(make-variant "off"))))))
+   (make-variant `#(("Method" . ,(make-variant "off")))))
+  (ipv6-configuration-method-set! ipv6-config "off"))
 
 
 (define (ipv6-configuration-set-manual! ipv6-config #!key address prefix-length gateway privacy)
-  (ipv6-configuration-method-set! ipv6-config "manual")
-  (when address (ipv6-configuration-address-set! ipv6-config address))
-  (when prefix-length (ipv6-configuration-prefix-length-set! ipv6-config prefix-length))
-  (when gateway (ipv6-configuration-gateway-set! ipv6-config gateway))
-  (when privacy (ipv6-configuration-privacy-set! ipv6-config privacy))
   (let ((conf-group (list address prefix-length gateway)))
     ;; Either all or none set
     (when (and (any identity conf-group)
@@ -312,27 +308,29 @@
           '())
       (if privacy
           `(("Privacy" . ,(make-variant privacy)))
-          '()))))))
+          '())))))
+  (ipv6-configuration-method-set! ipv6-config "manual")
+  (when address (ipv6-configuration-address-set! ipv6-config address))
+  (when prefix-length (ipv6-configuration-prefix-length-set! ipv6-config prefix-length))
+  (when gateway (ipv6-configuration-gateway-set! ipv6-config gateway))
+  (when privacy (ipv6-configuration-privacy-set! ipv6-config privacy)))
 
 
 ;;;
 ;;; Proxy
 ;;;
 (define (proxy-configuration-set-direct! proxy-config)
-  (proxy-configuration-method-set! proxy-config "direct")
   (dbus-call
    (proxy-configuration-context proxy-config)
    "SetProperty"
    "Proxy.Configuration"
-   (make-variant `#(("Method" . ,(make-variant "direct"))))))
+   (make-variant `#(("Method" . ,(make-variant "direct")))))
+  (proxy-configuration-method-set! proxy-config "direct"))
 
 
 (define (proxy-configuration-set-manual! proxy-config #!key servers excludes)
   (let ((servers (and servers (list->vector servers)))
         (excludes (and excludes (list->vector excludes))))
-    (proxy-configuration-method-set! proxy-config "direct")
-    (when servers (proxy-configuration-servers-set! proxy-config servers))
-    (when excludes (proxy-configuration-excludes-set! proxy-config excludes))
     (dbus-call
      (proxy-configuration-context proxy-config)
      "SetProperty"
@@ -346,18 +344,21 @@
             '())
         (if excludes
             `(("Excludes" . ,(make-variant excludes)))
-            '())))))))
+            '())))))
+    (proxy-configuration-method-set! proxy-config "direct")
+    (when servers (proxy-configuration-servers-set! proxy-config servers))
+    (when excludes (proxy-configuration-excludes-set! proxy-config excludes))))
 
 
 (define (proxy-configuration-set-auto! proxy-config url)
-  (proxy-configuration-method-set! proxy-config "auto")
-  (proxy-configuration-url-set! proxy-config url)
   (dbus-call
    (proxy-configuration-context proxy-config)
    "SetProperty"
    "Proxy.Configuration"
    (make-variant `#(("Method" . ,(make-variant "auto"))
-                    ("URL" . ,(make-variant url))))))
+                    ("URL" . ,(make-variant url)))))
+  (proxy-configuration-method-set! proxy-config "auto")
+  (proxy-configuration-url-set! proxy-config url))
 
 
 

@@ -29,21 +29,21 @@
 
 
 (define (manager-properties-set-offline-mode! properties offline?)
-  (manager-properties-offline-mode?-set! properties offline?)
   (dbus-call
    (manager-properties-context properties)
    "SetProperty"
    "OfflineMode"
-   (make-variant offline?)))
+   (make-variant offline?))
+  (manager-properties-offline-mode?-set! properties offline?))
 
 
 (define (manager-properties-set-session-mode! properties session-mode?)
-  (manager-properties-session-mode?-set! properties session-mode?)
   (dbus-call
    (manager-properties-context properties)
    "SetProperty"
    "SessionMode"
-   (make-variant session-mode?)))
+   (make-variant session-mode?))
+  (manager-properties-session-mode?-set! properties session-mode?))
 
 
 ;;;
@@ -62,7 +62,7 @@
              (techs (vector->list (car techs))))
     (map (lambda (item)
            (let ((path (object-path->string (struct-ref item 0)))
-		 (properties (vector->list (struct-ref item 1))))
+                 (properties (vector->list (struct-ref item 1))))
              (make-manager-technology path
                                       (dbus-value "Name" properties)
                                       (dbus-value "Type" properties)
@@ -77,9 +77,9 @@
 ;;;
 (define (manager-services context)
   (and-let* ((services (dbus-call context "GetServices"))
-	     (services (vector->list (car services))))
+             (services (vector->list (car services))))
     (map (lambda (item)
            (let* ((path (object-path->string (struct-ref item 0)))
-		  (context (make-service-context path)))
-	     (service-properties context)))
-	 services)))
+                  (context (make-service-context path)))
+             (service-properties context)))
+         services)))
