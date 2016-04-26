@@ -11,7 +11,7 @@
                  (nodes (cdar (cdr result))))
         (map (lambda (node)
                (match node
-                 ((node (@ (_name name))) name)))
+                 ((node ('@ (_name name))) name)))
              nodes))
       '()))
 
